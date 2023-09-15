@@ -76,6 +76,7 @@ export default function Waveform() {
 
   const [restart, setRestart] = useState(false)
 
+  // Set colours for each label
   useEffect(() => {
     // Initial render
     wavesurfer.current = WaveSurfer.create({
@@ -232,7 +233,7 @@ export default function Waveform() {
           }
         })
       })
-
+      // Find smallest number not in use for given file's regions when creating a new region
       function findNumber(values) {
         let result = [];
         for (let i = 0; i < values.length; ++i) {
@@ -245,7 +246,7 @@ export default function Waveform() {
             return i;
           }
         }
-        return 1
+        return 0
       }
 
       // Handle removing a region from the database and from the wavesurfer
@@ -270,7 +271,7 @@ export default function Waveform() {
         setLabel(region.data)
         setEditRegion(region)
         e.shiftKey ? region.playLoop() : region.play()
-        e.ctrlKey ? handleRemove(region) : region.play()
+        e.ctrlKey || e.altKey ? handleRemove(region) : region.play()
         const update = (e) => {
           setEdit(true)
           setX(e.x)
@@ -337,6 +338,7 @@ export default function Waveform() {
     }
   },[audio_file, point, gridFalse])
 
+  // Update region on select or change
   useEffect(() => {
     if (id && label!==null) { 
       if (wavesurfer.current.regions.list[id]){
@@ -346,12 +348,10 @@ export default function Waveform() {
           data: label,
           color: `${colours[label]})`
         })
-
         setState(!state)
       }
     }
   },[start, end, label])
-
   useEffect(() => {
     const updateRegion = async () => {
       const requestOptions = {
@@ -387,6 +387,7 @@ export default function Waveform() {
     setReload(!reload)
   }, [label, editRegion])
 
+  // Update region colors if label is changed
   useEffect(() => {
     for (const region of Object.values(wavesurfer.current.regions.list)) {
       region.update({color: `${colours[region.data]}`})  

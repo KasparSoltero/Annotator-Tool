@@ -6,6 +6,7 @@ from pydub import AudioSegment
 from preprocessing.classifier import embeddings
 
 def save_supports(filename: str, user: schemas.User):
+    print(f'Saving supports/embeddings for {filename}')
     if not os.path.exists(f'./static/{user.id}/supports/{filename[:-4]}.npy'):
         if not os.path.exists(f'./static/{user.id}/supports/'):
             os.mkdir(f'./static/{user.id}/supports/')

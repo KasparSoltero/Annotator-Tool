@@ -39,7 +39,6 @@ async def get_segments(user: schemas.User, db: orm.Session):
     # print(segments)
     return list(map(schemas.Segment.from_orm, segments))
 
-
 async def update_segments(filename, segment: schemas.SegmentCreate, user: schemas.User, db: orm.Session):
     point = await add_user_segment(dict(segment), user)
 

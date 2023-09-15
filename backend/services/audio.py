@@ -30,7 +30,7 @@ async def generate_segments(file: UploadFile, audio: np.ndarray, sampleRate: int
     audio_data = {}
     audio_data[file.filename] = (audio, sampleRate)
     files = [file.filename]
-    print("Generating segments")
+    print("Generating segments/regions from references")
     segments, seg_regions, seg_correlations = get_segs(user.id, files, audio_data, refs)
     data = models.Audio(**data, owner_id=user.id)
     for index, name in enumerate(segments.keys()):
@@ -140,7 +140,6 @@ async def get_audio_files(tag, user: schemas.User, db: orm.Session):
             if audio.id in contains_tag:
                 filtered.append(audio)
         return list(map(schemas.Audio.from_orm, filtered))
-
 
 async def audio_selector(filename: str, user: schemas.User, db: orm.Session):
     audio = db.query(models.Audio).filter_by(owner_id=user.id).filter(models.Audio.filename == filename).first()

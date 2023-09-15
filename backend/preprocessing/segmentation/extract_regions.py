@@ -31,7 +31,6 @@ methods_names = {'w':'Wavelet',
                 'r': 'Reference', 
                 'p': 'Parameter'}
 
-
 # Segment the specified file for a given method.
 # Times the operation so that the performance of each method can be evaluated.
 def get_correlation(file, audio_data, method=None, w_refs=None, p_refs=None):
@@ -127,6 +126,7 @@ def parent_name(string, file_extension):
 
 def generate_segment(id, segment):
     # Segment audio generated here
+    print(f'Generating {segment["filename"]}')
     output_path = f'./static/{id}/seg/'
     audio, sr = librosa.load(f'./static/{id}/audio/' + parent_name(segment['filename'], segment['filename'][-4:]), sr=None)
     scaled_start = int(np.floor(sr * segment['start']))
@@ -134,7 +134,6 @@ def generate_segment(id, segment):
     audio_slice = audio[scaled_start:scaled_stop]
     sf.write(f"{output_path}{segment['filename']}", audio_slice, sr)
     point = w.mfcc_svd(f"{output_path}{segment['filename']}")
-    print(point)
     return point
 
 def get_regions(userID, files, audio_data, refs, method='w', threshold=4.5):
@@ -163,7 +162,7 @@ def get_regions(userID, files, audio_data, refs, method='w', threshold=4.5):
     
     count, segments, regions, correlations = slice_audio(audio_data, binary_dict, correlation_dict, files, userID)
         
-    print(f'{count} segments extracted in {time()-t0:.3f}s.')
+    print(f'{count} segments/regions extracted in {time()-t0:.3f}s.')
 
     return segments, regions, correlations
 

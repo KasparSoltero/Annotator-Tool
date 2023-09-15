@@ -108,7 +108,6 @@ async def classifier(user: schemas.User, db: orm.Session, background_task):
             labels.append(label)
 
         # Make background task
-        print("training...")
         background_task.add_task(pipeline, user, labels)
 
         # Set all segments to trained
@@ -123,7 +122,7 @@ async def classifier(user: schemas.User, db: orm.Session, background_task):
         print("Updating prototypes...")
         await prototype_services.generate_supports(user, db)
 
-        # Remove this once training tab not required
+        #TODO Remove this once training tab not required
         stats = {
             'loss': [1],
             'accuracy': [1],

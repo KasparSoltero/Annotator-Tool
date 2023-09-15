@@ -80,6 +80,24 @@ export default function Confidence({audio, audio_id, reload, gridFalse, updateAu
     },
   })
 
+  // update all confidence and completion doughnuts when audio reloads or regions are updated/selected
+  useEffect(() => {
+    getRegions()
+  },[gridFalse])
+  useEffect(() => {
+    console.log('audio_id:'+audio_id+' audio.id:'+audio.id+' (Confidence.js reloading regions)')
+    if (audio_id !== null) {
+      if (audio.id === audio_id) {
+        getRegions()
+      } else if (render) {
+        getRegions()
+        setRender(false)
+      }
+    } else {
+      getRegions()
+    }
+  },[reload])
+
   async function getRegions() {
     const requestOptions = {
       method: "GET",
@@ -91,24 +109,6 @@ export default function Confidence({audio, audio_id, reload, gridFalse, updateAu
       setRegions(data)
     }
   }
-
-  useEffect(() => {
-    getRegions()
-  },[gridFalse])
-
-  useEffect(() => {
-    if (audio_id !== null) {
-      if (audio.id === audio_id) {
-        getRegions()
-      } else if (render) {
-        getRegions()
-        setRender(false)
-      }
-    } else {
-      getRegions()
-    }
-
-  },[reload])
 
   useEffect(() => {
     async function processConfidence() {
@@ -136,6 +136,7 @@ export default function Confidence({audio, audio_id, reload, gridFalse, updateAu
     if (audio_id !== null) {
       processConfidence()
       processCompletion()
+      console.log('completion:'+completion+' confidence:'+confidence+' (Confidence.js updating audio:'+audio.id+' with audio_id:'+audio_id+')')
     }
   },[regions,state])
 

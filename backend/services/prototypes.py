@@ -23,23 +23,28 @@ async def generate_supports(user: schemas.User, db: orm.Session):
     classes.remove('unknown')
 
     s = {}
-    # Get support segments for each class
+    # Get support segments/regions for each class of sound
     for label in classes:
         supports = db.query(models.Segments).filter_by(owner_id=user.id).filter(models.Segments.label == label).all()
         s[label] = supports
 
+    print(f'Generating supports for {len(s)} classes')
+
+    # Generate prototypes from support embeddings
     p = []
     for label in classes:
         temp = []
         for support in s[label]:
             if os.path.exists(f'./static/{user.id}/supports/{support.filename[:-4]}.npy'):
-                temp.append(np.load(f'./static/{user.id}/supports/{support.filename[:-4]}.npy')[0])
+                temp.append(np.load(f'./static/{user.id}/supports/{support.filename[:-4]}.npy', allow_pickle=True)[0])
 
         if len(temp) > 0:
             prototype = np.mean(np.array(temp), axis=0)
         else:
             prototype = None
         p.append(prototype)
+
+    print(f'Generated {len(p)} prototypes')
 
     # Save .npy files to prototypes directory with class name = filename
     if not os.path.exists(f"./static/{user.id}/prototypes/"):
@@ -48,6 +53,7 @@ async def generate_supports(user: schemas.User, db: orm.Session):
     for i in range(len(classes)):
         outfile = f"./static/{user.id}/prototypes/{classes[i]}.npy"
         np.save(outfile, p[i]) # Save prototypes
+    print('finished generating supports (prototypes)')
     return p
 
 async def predict(filename, user: schemas.User, db: orm.Session):
